@@ -151,6 +151,7 @@ const useFcmToken = () => {
       return unsubscribe;
     };
 
+     // Step 11: Cleanup the listener when the component unmounts.
     let unsubscribe: Unsubscribe | null = null;
 
     setupListener().then((unsub) => {
@@ -159,7 +160,6 @@ const useFcmToken = () => {
       }
     });
 
-    // Step 11: Cleanup the listener when the component unmounts.
     return () => unsubscribe?.();
   }, [token, router, toast]);
 

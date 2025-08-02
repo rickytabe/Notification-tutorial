@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     notification: {
       title: title,
       body: message,
+      imageUrl: "https://fastchops.com/_next/image?url=%2Fimages%2Flogos%2Flogo1.png&w=96&q=75"
     },
     webpush: link && {
       fcmOptions: {
