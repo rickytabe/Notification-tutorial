@@ -75,32 +75,7 @@ export default function Home() {
     }
   }
 
-  const fetchOrders = async () => {
-    const { data, error } = await supabase.from("orders").select("*");
-    const orders = data as Order[] || [];
-    setOrders(orders);
-    if (error) {
-      console.error("Error fetching orders:", error);
-      toast.error("Failed to fetch orders");
-    } else {
-      console.log("Orders fetched:", data);
-      setOrders(data as Order[]);
-    }
-  }
-
-  useEffect(() => {
-    // Fetch orders immediately on mount
-    fetchOrders();
-    console.log("Orders fetched:", orders);
-    toast.success("Orders fetched successfully");
-    // Set up interval to fetch orders every 2 seconds
-    const interval = setInterval(() => {
-      fetchOrders();
-    }, 2000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, []);
+  
 
 
   return (
