@@ -64,3 +64,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error }, { status: 500 });
   }
 }
+
+export async function GET() {
+  return NextResponse.json({ message: "Send-notification endpoint is alive" });
+}
