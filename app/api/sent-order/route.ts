@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import { Message } from "firebase-admin/messaging";
 import { NextRequest, NextResponse } from "next/server";
+import {supabase} from "@/lib/supabase";
 
 // 🔐 Load service account JSON
 const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -15,9 +16,6 @@ if (!admin.apps.length) {
   });
 }
 
-// 🔐 Supabase keys to fetch product info
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // ✅ POST handler
 export async function POST(request: NextRequest) {
@@ -38,24 +36,21 @@ export async function POST(request: NextRequest) {
     }
 
     // 📦 Fetch product from Supabase
-    const productRes = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${product_id}`, {
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-    });
+    const { data: product, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", product_id)
+      .single();
 
-    const data = await productRes.json();
-    const product = data[0];
-    console.log("📦 Fetched product:", product);
-
-    if (!product) {
+    if (error || !product) {
       console.warn("⚠️ Product not found");
       return NextResponse.json(
         { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
+
+    console.log("📦 Fetched product:", product);
 
     // 📨 Prepare FCM payload
     const payload: Message = {
@@ -67,7 +62,7 @@ export async function POST(request: NextRequest) {
       },
       webpush: {
         fcmOptions: {
-          link: `/orders/${product_id}`, // Adjust as needed
+          link: `/orders`, // Adjust as needed
         },
       },
     };
